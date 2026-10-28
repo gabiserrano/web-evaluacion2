@@ -8,6 +8,18 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
+
+ // Generar una temperatura aleatoria entre 1 y 100
+function generarTemperatura() {
+  return Math.floor(Math.random() * 100) + 1;
+}
+
+// Temperatura ideal del reactor
+let temperaturaIdeal = generarTemperatura();
+
+console.log("Temperatura ideal generada correctamente");
+
+
 // Ruta de prueba
 app.get("/health", (req, res) => {
   res.json({
