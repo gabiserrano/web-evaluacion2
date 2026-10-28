@@ -1,4 +1,5 @@
 
+/* Contenedor principal */
 .contenedor {
   min-height: 100vh;
   display: flex;
@@ -7,9 +8,10 @@
   padding: 25px;
 }
 
+/* Tarjeta del reactor */
 .reactor {
   background: #2d1b4e;
-  padding: 45px;
+  padding: 40px;
   border-radius: 22px;
   width: 100%;
   max-width: 500px;
@@ -18,32 +20,38 @@
   box-shadow: 0 15px 45px rgba(100, 40, 180, 0.35);
 }
 
-h1 {
+/* Título */
+.reactor h1 {
   color: #e9d5ff;
-  font-size: 36px;
+  font-size: 34px;
   margin-bottom: 20px;
 }
 
-p {
+/* Descripción */
+.reactor p {
   color: #ddd6fe;
   line-height: 1.7;
   font-size: 16px;
 }
 
-form {
+/* Formulario */
+.reactor form {
   display: flex;
   flex-direction: column;
   gap: 18px;
   margin-top: 30px;
 }
 
-label {
+/* Etiquetas */
+.reactor label {
   color: #f3e8ff;
   font-weight: bold;
   font-size: 17px;
 }
 
-input {
+/* Campo de temperatura */
+.reactor input {
+  width: 100%;
   padding: 15px;
   background: #faf5ff;
   color: #4c1d95;
@@ -52,15 +60,15 @@ input {
   font-size: 20px;
   text-align: center;
   outline: none;
-  transition: 0.3s;
 }
 
-input:focus {
+.reactor input:focus {
   border-color: #a78bfa;
   box-shadow: 0 0 12px rgba(196, 181, 253, 0.6);
 }
 
-button {
+/* Botón */
+.reactor button {
   padding: 15px;
   background: linear-gradient(135deg, #a78bfa, #c084fc);
   color: #2e1065;
@@ -72,23 +80,75 @@ button {
   transition: 0.3s;
 }
 
-button:hover:not(:disabled) {
+.reactor button:hover:not(:disabled) {
   background: linear-gradient(135deg, #c084fc, #e9d5ff);
   transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(192, 132, 252, 0.4);
 }
 
-button:disabled {
+.reactor button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
+/* Mensaje del servidor */
 .mensaje {
   margin-top: 25px;
   padding: 15px;
   background: rgba(167, 139, 250, 0.15);
   border: 1px solid #a78bfa;
   border-radius: 12px;
-  color: #f5d0fe;
+  color: #f5d0fe !important;
   font-weight: bold;
+}
+
+/* Mensaje de victoria */
+.victoria {
+  color: #4ade80;
+  margin-top: 20px;
+}
+
+/* Historial de intentos */
+.historial {
+  margin-top: 30px;
+  padding: 20px;
+  background: rgba(167, 139, 250, 0.12);
+  border: 1px solid #a78bfa;
+  border-radius: 15px;
+  text-align: left;
+}
+
+.historial h2 {
+  color: #e9d5ff;
+  font-size: 22px;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.historial p {
+  color: #ddd6fe;
+  font-size: 14px;
+}
+
+.historial ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+.historial li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #4c1d95;
+  border-radius: 10px;
+  color: white;
+  font-size: 14px;
+}
+
+.historial li.acierto {
+  background: #166534;
+  border: 1px solid #4ade80;
 }

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import "./App.css";
 
@@ -7,7 +8,10 @@ function App() {
   const [estabilizado, setEstabilizado] = useState(false);
   const [cargando, setCargando] = useState(false);
 
-  // Enviar temperatura al servidor
+  // Historial de temperaturas ingresadas
+  const [historial, setHistorial] = useState([]);
+
+  // Enviar temperatura al backend
   const manejarEnvio = async (e) => {
     e.preventDefault();
 
@@ -39,20 +43,34 @@ function App() {
         }
       );
 
-      if (!respuesta.ok) {
-        throw new Error("Error al consultar el servidor");
-      }
-
       const datos = await respuesta.json();
 
-      // Mostrar respuesta del servidor
+      if (!respuesta.ok) {
+        setMensaje(datos.mensaje || "Error al ajustar la temperatura");
+        return;
+      }
+
+      // Mostrar mensaje del servidor
       setMensaje(datos.mensaje);
 
-      // Verificar si el reactor fue estabilizado
+      // Guardar el intento en el historial
+      const nuevoIntento = {
+        temperatura: numero,
+        estado: datos.estado,
+        estabilizado: datos.estabilizado === true
+      };
+
+      setHistorial((anterior) => [
+        ...anterior,
+        nuevoIntento
+      ]);
+
+      // Verificar si el usuario ganó
       if (datos.estabilizado === true) {
         setEstabilizado(true);
       }
 
+      // Limpiar el campo
       setTemperatura("");
 
     } catch (error) {
@@ -63,9 +81,15 @@ function App() {
     }
   };
 
+  // Contar los intentos fallidos
+  const intentosFallidos = historial.filter(
+    (intento) => !intento.estabilizado
+  ).length;
+
   return (
     <div className="contenedor">
       <div className="reactor">
+
         <h1>Estabiliza el Reactor</h1>
 
         <p>
@@ -103,10 +127,42 @@ function App() {
         )}
 
         {estabilizado && (
-          <h2 style={{ color: "#4ade80" }}>
+          <h2 className="victoria">
             ¡Reactor estabilizado!
           </h2>
         )}
+
+        {/* Historial de temperaturas */}
+        <div className="historial">
+          <h2>Historial de intentos</h2>
+
+          <p>Total de intentos: {historial.length}</p>
+          <p>Intentos fallidos: {intentosFallidos}</p>
+
+          {historial.length === 0 ? (
+            <p>Todavía no has ingresado temperaturas.</p>
+          ) : (
+            <ul>
+              {historial.map((intento, index) => (
+                <li
+                  key={index}
+                  className={intento.estabilizado ? "acierto" : ""}
+                >
+                  <span>
+                    Intento {index + 1}: {intento.temperatura}°C
+                  </span>
+
+                  <span>
+                    {intento.estabilizado
+                      ? "Estabilizado"
+                      : intento.estado}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
       </div>
     </div>
   );
