@@ -16,6 +16,7 @@ function generarTemperatura() {
 
 // Temperatura ideal del reactor
 let temperaturaIdeal = generarTemperatura();
+console.log("Temperatura correcta:", temperaturaIdeal);
 
 console.log("Temperatura ideal generada correctamente");
 

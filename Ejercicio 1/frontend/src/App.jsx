@@ -1,22 +1,66 @@
-
 import { useState } from "react";
 import "./App.css";
 
 function App() {
   const [temperatura, setTemperatura] = useState("");
   const [mensaje, setMensaje] = useState("");
+  const [estabilizado, setEstabilizado] = useState(false);
+  const [cargando, setCargando] = useState(false);
 
-  const manejarEnvio = (e) => {
+  // Enviar temperatura al servidor
+  const manejarEnvio = async (e) => {
     e.preventDefault();
 
     const numero = Number(temperatura);
 
-    if (!Number.isInteger(numero) || numero < 1 || numero > 100) {
+    if (
+      temperatura.trim() === "" ||
+      !Number.isInteger(numero) ||
+      numero < 1 ||
+      numero > 100
+    ) {
       setMensaje("Ingresa una temperatura válida entre 1 y 100");
       return;
     }
 
-    setMensaje(`Temperatura ${numero}°C preparada para enviar`);
+    setCargando(true);
+
+    try {
+      const respuesta = await fetch(
+        "http://localhost:3000/adjust",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            temperatura: numero
+          })
+        }
+      );
+
+      if (!respuesta.ok) {
+        throw new Error("Error al consultar el servidor");
+      }
+
+      const datos = await respuesta.json();
+
+      // Mostrar respuesta del servidor
+      setMensaje(datos.mensaje);
+
+      // Verificar si el reactor fue estabilizado
+      if (datos.estabilizado === true) {
+        setEstabilizado(true);
+      }
+
+      setTemperatura("");
+
+    } catch (error) {
+      console.error(error);
+      setMensaje("Error de conexión con el servidor");
+    } finally {
+      setCargando(false);
+    }
   };
 
   return (
@@ -43,14 +87,26 @@ function App() {
             placeholder="Ejemplo: 50"
             value={temperatura}
             onChange={(e) => setTemperatura(e.target.value)}
+            disabled={estabilizado || cargando}
           />
 
-          <button type="submit">
-            Ajustar temperatura
+          <button
+            type="submit"
+            disabled={estabilizado || cargando}
+          >
+            {cargando ? "Ajustando..." : "Ajustar temperatura"}
           </button>
         </form>
 
-        {mensaje && <p className="mensaje">{mensaje}</p>}
+        {mensaje && (
+          <p className="mensaje">{mensaje}</p>
+        )}
+
+        {estabilizado && (
+          <h2 style={{ color: "#4ade80" }}>
+            ¡Reactor estabilizado!
+          </h2>
+        )}
       </div>
     </div>
   );
