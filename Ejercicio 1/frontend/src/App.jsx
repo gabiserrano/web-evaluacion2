@@ -7,8 +7,7 @@ function App() {
   const [mensaje, setMensaje] = useState("");
   const [estabilizado, setEstabilizado] = useState(false);
   const [cargando, setCargando] = useState(false);
-
-  // Historial de temperaturas ingresadas
+  const [reiniciando, setReiniciando] = useState(false);
   const [historial, setHistorial] = useState([]);
 
   // Enviar temperatura al backend
@@ -43,17 +42,16 @@ function App() {
         }
       );
 
-      const datos = await respuesta.json();
-
       if (!respuesta.ok) {
-        setMensaje(datos.mensaje || "Error al ajustar la temperatura");
-        return;
+        throw new Error("Error al ajustar la temperatura");
       }
+
+      const datos = await respuesta.json();
 
       // Mostrar mensaje del servidor
       setMensaje(datos.mensaje);
 
-      // Guardar el intento en el historial
+      // Guardar intento en el historial
       const nuevoIntento = {
         temperatura: numero,
         estado: datos.estado,
@@ -65,12 +63,11 @@ function App() {
         nuevoIntento
       ]);
 
-      // Verificar si el usuario ganó
+      // Verificar si el jugador ganó
       if (datos.estabilizado === true) {
         setEstabilizado(true);
       }
 
-      // Limpiar el campo
       setTemperatura("");
 
     } catch (error) {
@@ -81,7 +78,39 @@ function App() {
     }
   };
 
-  // Contar los intentos fallidos
+  // Reiniciar el reactor
+  const reiniciarReactor = async () => {
+    setReiniciando(true);
+
+    try {
+      const respuesta = await fetch(
+        "http://localhost:3000/reboot",
+        {
+          method: "POST"
+        }
+      );
+
+      if (!respuesta.ok) {
+        throw new Error("Error al reiniciar el reactor");
+      }
+
+      const datos = await respuesta.json();
+
+      // Limpiar estados para comenzar otra partida
+      setTemperatura("");
+      setHistorial([]);
+      setEstabilizado(false);
+      setMensaje(datos.mensaje);
+
+    } catch (error) {
+      console.error(error);
+      setMensaje("No se pudo reiniciar el reactor");
+    } finally {
+      setReiniciando(false);
+    }
+  };
+
+  // Contador de intentos fallidos
   const intentosFallidos = historial.filter(
     (intento) => !intento.estabilizado
   ).length;
@@ -111,12 +140,12 @@ function App() {
             placeholder="Ejemplo: 50"
             value={temperatura}
             onChange={(e) => setTemperatura(e.target.value)}
-            disabled={estabilizado || cargando}
+            disabled={estabilizado || cargando || reiniciando}
           />
 
           <button
             type="submit"
-            disabled={estabilizado || cargando}
+            disabled={estabilizado || cargando || reiniciando}
           >
             {cargando ? "Ajustando..." : "Ajustar temperatura"}
           </button>
@@ -132,7 +161,17 @@ function App() {
           </h2>
         )}
 
-        {/* Historial de temperaturas */}
+        {/* Botón para reiniciar el reactor */}
+        <button
+          type="button"
+          className="boton-reiniciar"
+          onClick={reiniciarReactor}
+          disabled={reiniciando || cargando}
+        >
+          {reiniciando ? "Reiniciando..." : "Reiniciar reactor"}
+        </button>
+
+        {/* Historial de intentos */}
         <div className="historial">
           <h2>Historial de intentos</h2>
 

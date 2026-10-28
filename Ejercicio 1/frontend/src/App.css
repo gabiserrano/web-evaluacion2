@@ -1,4 +1,3 @@
-
 /* Contenedor principal */
 .contenedor {
   min-height: 100vh;
@@ -151,4 +150,24 @@
 .historial li.acierto {
   background: #166534;
   border: 1px solid #4ade80;
+}
+
+/* Boton para reiniciar el reactor */
+.reactor .boton-reiniciar {
+  width: 100%;
+  margin-top: 20px;
+  padding: 15px;
+  background: linear-gradient(135deg, #7c3aed, #9333ea);
+  color: #ffffff;
+  border: 1px solid #c4b5fd;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.reactor .boton-reiniciar:hover:not(:disabled) {
+  background: linear-gradient(135deg, #9333ea, #a855f7);
+  transform: translateY(-2px);
 }
