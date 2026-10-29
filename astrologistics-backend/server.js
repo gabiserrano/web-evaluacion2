@@ -4,12 +4,12 @@ import cors from 'cors';
 const app = express();
 const PORT = 3001;
 const PRESUPUESTO_INICIAL = 500;
-const DURACION_SESION_SEG = 300; // ventana de lanzamiento: 5 minutos
+const DURACION_SESION_SEG = 300; 
 
 app.use(cors());
 app.use(express.json());
 
-// ---------- Estado en memoria ----------
+
 const crearInventario = () => [
   { id: 201, nombre: 'Tanque de Oxígeno XL', precio: 50, stock: 5, categoria: 'Soporte Vital' },
   { id: 202, nombre: 'Panel Solar Plegable', precio: 80, stock: 3, categoria: 'Energía' },
@@ -22,11 +22,11 @@ const crearInventario = () => [
 ];
 
 let inventario = crearInventario();
-let itemsCargados = []; // [{ id, cantidad }]
+let itemsCargados = [];
 let confirmada = false;
 let inicioSesion = Date.now();
 
-// ---------- Funciones auxiliares ----------
+
 const buscarProducto = (id) => inventario.find((p) => p.id === id);
 
 const calcularTotal = () =>
@@ -48,7 +48,7 @@ const estadoCarga = () => {
   };
 };
 
-// Bloquea modificaciones si el tiempo expiró o la carga ya fue confirmada
+
 const verificarSesion = (req, res, next) => {
   if (tiempoRestante() === 0) {
     return res.status(410).json({
@@ -61,7 +61,7 @@ const verificarSesion = (req, res, next) => {
   next();
 };
 
-// Cambia la cantidad de un producto validando stock y créditos
+
 const aplicarCantidad = (producto, nuevaCantidad) => {
   const existente = itemsCargados.find((i) => i.id === producto.id);
   const actual = existente ? existente.cantidad : 0;
@@ -109,7 +109,7 @@ app.post('/api/carga/agregar', verificarSesion, (req, res) => {
   res.status(201).json(estadoCarga());
 });
 
-// 4. Actualizar unidades
+
 app.put('/api/carga/actualizar-unidades/:id', verificarSesion, (req, res) => {
   const id = Number(req.params.id);
   const cantidad = Number(req.body.cantidad);
@@ -128,7 +128,7 @@ app.put('/api/carga/actualizar-unidades/:id', verificarSesion, (req, res) => {
   res.json(estadoCarga());
 });
 
-// 5. Eliminar suministro (devuelve stock)
+
 app.delete('/api/carga/eliminar/:id', verificarSesion, (req, res) => {
   const id = Number(req.params.id);
   const item = itemsCargados.find((i) => i.id === id);
@@ -139,7 +139,7 @@ app.delete('/api/carga/eliminar/:id', verificarSesion, (req, res) => {
   res.json(estadoCarga());
 });
 
-// Extras: confirmar y reiniciar
+
 app.post('/api/carga/confirmar', verificarSesion, (req, res) => {
   if (itemsCargados.length === 0) {
     return res.status(400).json({ mensaje: 'La carga está vacía' });
