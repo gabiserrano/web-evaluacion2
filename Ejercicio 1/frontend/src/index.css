@@ -1,0 +1,17 @@
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: linear-gradient(
+    135deg,
+    #160b2b,
+    #321b60,
+    #6d28d9
+  );
+  font-family: Arial, sans-serif;
+}
